@@ -11,11 +11,13 @@ from crewai import Crew, Process, Task
 
 from agents.coordinator import build_coordinator
 from agents.workout_agent import build_workout_agent
+from agents.nutrition_agent import build_nutrition_agent
 
 
 def build_fitness_crew(user_query: str) -> Crew:
     coordinator = build_coordinator()
     workout_agent = build_workout_agent()
+    nutrition_agent = build_nutrition_agent()
 
     task = Task(
         description=(
@@ -32,7 +34,7 @@ def build_fitness_crew(user_query: str) -> Crew:
     )
 
     return Crew(
-        agents=[workout_agent],  # add nutrition_agent, recovery_agent, progress_agent here later
+        agents=[workout_agent, nutrition_agent],  # add recovery_agent, progress_agent here later
         tasks=[task],
         process=Process.hierarchical,
         manager_agent=coordinator,
