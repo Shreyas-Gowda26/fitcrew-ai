@@ -1,0 +1,4 @@
+crewai[google-genai]>=0.86.0
+crewai-tools>=0.17.0
+pymongo>=4.6.0
+python-dotenv>=1.0.0
