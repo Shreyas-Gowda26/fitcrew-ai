@@ -37,8 +37,8 @@ def print_header():
 def print_menu():
     print("""
 1. Workout Recommendation
-2. Nutrition Advice          (coming in Phase 4)
-3. Recovery Analysis         (coming in Phase 5)
+2. Nutrition Advice
+3. Recovery Analysis
 4. Progress Report           (coming in Phase 6)
 5. Daily Summary
 6. Update Profile
@@ -69,6 +69,24 @@ def handle_ask_ai():
     query = input("Ask me anything fitness-related: ").strip()
     if query:
         run_crew(query)
+
+
+def handle_nutrition_advice():
+    query = input(
+        "What nutrition help do you need? (or press Enter for 'give me today's nutrition plan'): "
+    ).strip()
+    if not query:
+        query = "Give me today's nutrition plan based on my profile, including calorie/macro targets and meal ideas."
+    run_crew(query)
+
+
+def handle_recovery_analysis():
+    query = input(
+        "What recovery help do you need? (or press Enter for 'analyze my recovery today'): "
+    ).strip()
+    if not query:
+        query = "Analyze my recovery today: recovery score, fatigue risk, hydration, and whether I should rest."
+    run_crew(query)
 
 
 def handle_daily_summary():
@@ -137,9 +155,9 @@ def main():
         if choice == "1":
             handle_workout_recommendation()
         elif choice == "2":
-            print("\nNutrition Advice is coming in Phase 4.\n")
+            handle_nutrition_advice()
         elif choice == "3":
-            print("\nRecovery Analysis is coming in Phase 5.\n")
+            handle_recovery_analysis()
         elif choice == "4":
             print("\nProgress Report is coming in Phase 6.\n")
         elif choice == "5":
