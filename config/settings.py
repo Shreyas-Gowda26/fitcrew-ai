@@ -13,6 +13,7 @@ class Settings:
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
     GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini/gemini-2.5-flash")
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
+    OPENROUTER_API_KEY: str = os.getenv("OPENROUTER_API_KEY", "")
 
     MONGO_URI: str = os.getenv("MONGO_URI", "")
     MONGO_DB_NAME: str = os.getenv("MONGO_DB_NAME", "fitcrew_ai")
@@ -22,12 +23,19 @@ class Settings:
     DEFAULT_USER_ID: str = os.getenv("DEFAULT_USER_ID", "me")
 
     @classmethod
+    @classmethod
     def validate(cls):
         missing = []
-        if not cls.GEMINI_API_KEY:
-            missing.append("GEMINI_API_KEY")
         if not cls.MONGO_URI:
             missing.append("MONGO_URI")
+
+        if cls.GEMINI_MODEL.startswith("gemini/") and not cls.GEMINI_API_KEY:
+            missing.append("GEMINI_API_KEY")
+        elif cls.GEMINI_MODEL.startswith("openrouter/") and not cls.OPENROUTER_API_KEY:
+            missing.append("OPENROUTER_API_KEY")
+        elif cls.GEMINI_MODEL.startswith("openai/") and not cls.OPENAI_API_KEY:
+            missing.append("OPENAI_API_KEY")
+
         if missing:
             raise RuntimeError(
                 f"Missing required environment variables: {', '.join(missing)}. "
