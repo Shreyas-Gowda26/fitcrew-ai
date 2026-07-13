@@ -39,7 +39,7 @@ def print_menu():
 1. Workout Recommendation
 2. Nutrition Advice
 3. Recovery Analysis
-4. Progress Report           (coming in Phase 6)
+4. Progress Report
 5. Daily Summary
 6. Update Profile
 7. Ask AI
@@ -86,6 +86,18 @@ def handle_recovery_analysis():
     ).strip()
     if not query:
         query = "Analyze my recovery today: recovery score, fatigue risk, hydration, and whether I should rest."
+    run_crew(query)
+
+
+def handle_progress_report():
+    query = input(
+        "What progress info do you need? (or press Enter for 'give me my progress report'): "
+    ).strip()
+    if not query:
+        query = (
+            "Give me my progress report: weekly activity, weight trend, "
+            "workout consistency, and how I'm tracking against my goal."
+        )
     run_crew(query)
 
 
@@ -159,7 +171,7 @@ def main():
         elif choice == "3":
             handle_recovery_analysis()
         elif choice == "4":
-            print("\nProgress Report is coming in Phase 6.\n")
+            handle_progress_report()
         elif choice == "5":
             handle_daily_summary()
         elif choice == "6":
