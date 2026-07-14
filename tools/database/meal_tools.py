@@ -3,8 +3,9 @@ tools/database/meal_tools.py
 
 LogMealTool -> record a meal + its calories/macros, and roll the calories
 into today's daily_logs summary.
+GetMealHistoryTool -> retrieve recently logged meals.
 """
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Type, Optional
 
 from crewai.tools import BaseTool
@@ -61,3 +62,30 @@ class LogMealTool(BaseTool):
             increments={"total_calories_today": calories or 0},
         )
         return "Meal logged successfully."
+
+
+class MealHistoryInput(BaseModel):
+    limit: int = Field(20, description="Max number of recent meal entries to fetch")
+
+
+class MealHistoryTool(BaseTool):
+    name: str = "get_meal_history"
+    description: str = (
+        "Fetch the user's most recently logged meals, newest first. Use this "
+        "whenever asked about past nutrition logs — if it returns no entries, "
+        "that means nothing has actually been logged, and you must say so rather "
+        "than inventing meal data."
+    )
+    args_schema: Type[BaseModel] = MealHistoryInput
+
+    def _run(self, limit: int = 20) -> str:
+        db = get_db()
+        entries = list(
+            db[MEALS]
+            .find({"user_id": settings.DEFAULT_USER_ID}, {"_id": 0})
+            .sort("date", -1)
+            .limit(limit)
+        )
+        if not entries:
+            return "No meals have been logged yet. Nothing to show."
+        return str(entries)

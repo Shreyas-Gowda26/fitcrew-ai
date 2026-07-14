@@ -23,7 +23,9 @@ class DailySummaryTool(BaseTool):
     name: str = "get_daily_summary"
     description: str = (
         "Get today's summary: whether sleep, water, calories, and workout have "
-        "been logged today, plus total calories logged so far."
+        "been logged today, plus total calories logged so far. This tool takes "
+        "NO arguments — call it with an empty input, never pass 'limit' or any "
+        "other parameter (there is only ever one summary: today's)."
     )
     args_schema: Type[BaseModel] = DailySummaryInput
 
