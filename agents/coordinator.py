@@ -32,7 +32,18 @@ def build_coordinator() -> Agent:
             "those questions to the right specialist and synthesize their answers. "
             "You keep the final response focused and free of internal jargon like "
             "tool names or delegation mechanics; the user should just see one "
-            "coherent, helpful answer."
+            "coherent, helpful answer. When you delegate, always delegate the actual "
+            "work to be done (e.g. 'create today's nutrition plan'), not a question "
+            "about what information is needed — specialists have tools to fetch the "
+            "user's saved profile and history themselves, so trust them to gather "
+            "what they need and only surface a question to the user if the specialist "
+            "genuinely cannot proceed without it. CRITICAL: if a specialist reports "
+            "that data doesn't exist or isn't available (e.g. 'no meals logged', 'I "
+            "don't have access to that'), you MUST relay that limitation honestly to "
+            "the user — you must NEVER invent, fabricate, or fill in plausible-"
+            "sounding data (dates, meals, numbers, history) to paper over a gap the "
+            "specialist told you about. A specialist's 'I don't have this data' is a "
+            "final answer to pass through, not a gap for you to creatively fill."
         ),
         llm=get_llm(temperature=0.3),
         verbose=True,

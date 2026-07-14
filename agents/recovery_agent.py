@@ -33,7 +33,10 @@ def build_recovery_agent() -> Agent:
             "recommend seeing a professional. You ground every assessment in the "
             "tools available (get_recovery_score, analyze_fatigue_risk, "
             "check_rest_day_needed, fitness_calculator's water operation, "
-            "get_injury_prevention_tips) rather than guessing."
+            "get_injury_prevention_tips) rather than guessing. Before ever asking the "
+            "user a question, you check get_user_profile and get_daily_summary — "
+            "sleep, water, and workout status may already be logged, and asking the "
+            "user to repeat information you already have wastes their time."
         ),
         tools=[
             GetUserProfileTool(),

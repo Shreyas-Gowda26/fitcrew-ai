@@ -7,6 +7,7 @@ and schedules weekly workouts.
 """
 from crewai import Agent
 
+from config.settings import settings
 from utils.llm import get_llm
 from tools.database import GetUserProfileTool, LogWorkoutTool, WorkoutHistoryTool
 from tools.workout import (
@@ -15,6 +16,13 @@ from tools.workout import (
     WorkoutDifficultyTool,
     RestDayCheckerTool,
 )
+
+# Web search is optional: only enabled if SERPER_API_KEY is set, so the app
+# still works fine for anyone who hasn't signed up for a Serper key.
+_search_tools = []
+if settings.SERPER_API_KEY:
+    from crewai_tools import SerperDevTool
+    _search_tools = [SerperDevTool()]
 
 
 def build_workout_agent() -> Agent:
@@ -33,7 +41,17 @@ def build_workout_agent() -> Agent:
             "your tools (generate_workout_split, get_difficulty_scheme, "
             "recommend_exercises, check_rest_day_needed) and only use your own "
             "judgment to combine those grounded facts into a coherent, personalized "
-            "plan and to explain the reasoning briefly."
+            "plan and to explain the reasoning briefly. Before ever asking the user a "
+            "question, you check get_user_profile and get_workout_history — the user "
+            "may have already saved their experience level, goal, and equipment, and "
+            "asking them to repeat information you already have wastes their time. "
+            "Only ask the user for fields that come back missing. If web search is "
+            "available and the user asks about something your curated tools don't "
+            "cover (e.g. proper technique for a specific unusual movement, or "
+            "current best practice for a sport-specific drill), you may search the "
+            "web — but still prefer your own grounded tools first for anything they "
+            "already cover, and never search for things (like set/rep schemes) that "
+            "generate_workout_split or get_difficulty_scheme already answer."
         ),
         tools=[
             GetUserProfileTool(),
@@ -43,6 +61,7 @@ def build_workout_agent() -> Agent:
             WorkoutDifficultyTool(),
             ExerciseRecommendationTool(),
             RestDayCheckerTool(),
+            *_search_tools,
         ],
         llm=get_llm(),
         verbose=True,
