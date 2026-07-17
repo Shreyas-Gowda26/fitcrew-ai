@@ -1,15 +1,20 @@
 """
 FitCrew AI — CLI entry point.
 
-Phase 3 status: options 1 (Workout Recommendation) and 7 (Ask AI) are live,
-routed through the Coordinator -> Workout Agent crew. Nutrition (2),
-Recovery (3), and Progress Report (4) are placeholders until their agents
-exist (Phases 4-6).
+All 7 phases are live: Coordinator + Workout/Nutrition/Recovery/Progress
+agents, routed through the hierarchical crew. Each crew run also builds and
+persists an Execution Report (timestamp, tools used, timing) and logs the
+query/response pair to chat_history.
 """
+import time
+from datetime import datetime, timezone
+
 from config.settings import settings
 from database.connection import ping
 from tools.database import GetUserProfileTool, UpdateUserProfileTool, DailySummaryTool
 from crews.fitness_crew import build_fitness_crew
+from utils.report_tracker import ExecutionTracker
+from utils.reporting import build_report, print_report, save_report, save_chat_history
 
 VALID_ACTIVITY_LEVELS = ["sedentary", "light", "moderate", "active", "very_active"]
 VALID_GOALS = ["lose_weight", "maintain", "gain_muscle"]
@@ -49,11 +54,25 @@ def print_menu():
 
 def run_crew(query: str):
     print("\n(thinking... this calls Gemini + your tools, may take a moment)\n")
-    crew = build_fitness_crew(query)
+
+    tracker = ExecutionTracker()
+    started_at = datetime.now(timezone.utc)
+    start_time = time.time()
+
+    crew = build_fitness_crew(query, tracker=tracker)
     result = crew.kickoff()
+
+    elapsed = time.time() - start_time
+    response_text = str(result)
+
     print("\n" + "=" * 40)
     print(result)
     print("=" * 40 + "\n")
+
+    report = build_report(query, response_text, tracker, started_at, elapsed)
+    print_report(report)
+    save_report(report)
+    save_chat_history(query, response_text, started_at)
 
 
 def handle_workout_recommendation():
