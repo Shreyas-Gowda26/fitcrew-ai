@@ -1,5 +1,7 @@
 # FitCrew AI
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A personal AI fitness & sports performance coach — a multi-agent system built with
 **CrewAI**, an LLM of your choice (Gemini / OpenAI / OpenRouter), and **MongoDB Atlas**
 for persistence. CLI-only, no frontend by design.
